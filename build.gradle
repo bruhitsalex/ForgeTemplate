@@ -1,0 +1,94 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "https://maven.minecraftforge.net/"
+        }
+        maven {
+            name = "jitpack"
+            url = "https://jitpack.io/"
+        }
+        mavenCentral()
+        maven { url = "https://repo.spongepowered.org/maven" }
+    }
+    dependencies {
+        classpath "com.github.asbyth:ForgeGradle:6f53277"
+        classpath 'com.github.LxGaming:MixinGradle:d75e32e'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'application'
+compileJava.options.encoding = 'UTF-8'
+
+version = "1.0"
+group= "com.yourname.modid"
+archivesBaseName = "modid"
+
+minecraft {
+    version = "1.8.9-11.15.1.2318-1.8.9"
+    runDir = "run"
+    mappings = "stable_20"
+    makeObfSourceJar = false
+}
+
+repositories {
+    jcenter()
+    maven { url 'https://repo.spongepowered.org/maven/' }
+    maven {
+        url 'https://repo.maven.apache.org/maven2'
+        name 'Maven Central'
+    }
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation('org.spongepowered:mixin:0.7.11-SNAPSHOT')
+    annotationProcessor('org.spongepowered:mixin:0.7.11-SNAPSHOT')
+}
+
+mixin {
+    add sourceSets.main, "mixins.modid.refmap.json"
+}
+
+jar {
+    manifest.attributes(
+            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+            'MixinConfigs': "mixins.modid.json",
+            'FMLCorePluginContainsFMLMod': true,
+            "ForceLoadAsMod": true
+    )
+}
+
+shadowJar {
+    zip64 true
+    dependencies {
+        include(dependency('org.spongepowered:mixin:0.7.11-SNAPSHOT'))
+    }
+    mainClassName = ""
+}
+
+reobf {
+    shadowJar {
+        mappingType = 'SEARGE'
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
