@@ -27,8 +27,8 @@ apply plugin: 'application'
 compileJava.options.encoding = 'UTF-8'
 
 version = "1.0"
-group= "com.yourname.modid"
-archivesBaseName = "modid"
+group = "com.example.examplemod"
+archivesBaseName = "examplemod"
 
 minecraft {
     version = "1.8.9-11.15.1.2318-1.8.9"
@@ -53,13 +53,13 @@ dependencies {
 }
 
 mixin {
-    add sourceSets.main, "mixins.modid.refmap.json"
+    add sourceSets.main, "mixins.examplemod.refmap.json"
 }
 
 jar {
     manifest.attributes(
             'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
-            'MixinConfigs': "mixins.modid.json",
+            'MixinConfigs': "mixins.examplemod.json",
             'FMLCorePluginContainsFMLMod': true,
             "ForceLoadAsMod": true
     )
